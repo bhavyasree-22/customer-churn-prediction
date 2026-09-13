@@ -304,9 +304,15 @@ This project demonstrates a complete machine-learning workflow for telecom churn
 
 ---
 
-## Author
+## 🧑‍💻 Author
 
-**Bhavya Sree Gubba**  
-B.Tech CSE (AI & ML), VIT-AP University
+### Bhavya Sree Gubba
 
-**Profiles:** [GitHub](https://github.com/bhavyasree-22) · [LinkedIn](https://www.linkedin.com/in/bhavya-sree-22122006bs/)
+🎓 B.Tech CSE (AI & ML) &nbsp; 🏫 VIT-AP University
+
+## 📬 Connect With Me
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Bhavya%20Sree-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/bhavya-sree-22122006bs/)
+[![GitHub](https://img.shields.io/badge/GitHub-bhavyasree--22-181717?logo=github&logoColor=white)](https://github.com/bhavyasree-22)
+
+⭐ If you found this project useful, consider giving the repository a star.
