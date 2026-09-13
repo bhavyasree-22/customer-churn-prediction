@@ -13,7 +13,7 @@
 
 ---
 
-## About
+## 📌 About
 
 This project predicts whether a telecommunications customer is likely to churn. It compares six classification models, evaluates two feature-engineering strategies, investigates feature importance and feature selection, and tunes Gradient Boosting with Grid Search.
 
@@ -21,7 +21,7 @@ The complete implementation is available in [`customer_churn_prediction.ipynb`](
 
 ---
 
-## Project Objectives
+## 🎯 Project Objectives
 
 - Establish baseline performance using multiple classification models.
 - Create compact and extended domain-based features.
@@ -33,7 +33,7 @@ The complete implementation is available in [`customer_churn_prediction.ipynb`](
 
 ---
 
-## Business Problem
+## 💼 Business Problem
 
 Customer churn can reduce recurring revenue and increase customer-acquisition costs. A churn prediction model can help identify customers who may need targeted retention attention.
 
@@ -41,7 +41,7 @@ This is a binary classification problem. `Churn = 1` represents a customer who l
 
 ---
 
-## Dataset
+## 📊 Dataset
 
 The project uses the Telco Customer Churn dataset:
 
@@ -53,7 +53,7 @@ The project uses the Telco Customer Churn dataset:
 
 `customerID` is removed before modelling. `TotalCharges` is converted from `object` to numeric, and `Churn` is encoded as `0` and `1`.
 
-### Dataset Features / Important Features
+### 🧾 Dataset Features / Important Features
 
 The dataset contains customer demographics, tenure, services, contract information, payment behaviour, monthly charges, and total charges.
 
@@ -72,7 +72,7 @@ The most influential features identified by the Random Forest analysis were:
 
 ---
 
-## Project Workflow
+## 🔄 Project Workflow
 
 ```text
 Data Loading
@@ -90,7 +90,7 @@ Data Loading
 
 ---
 
-## Models Used
+## 🤖 Models Used
 
 | Model | Role |
 | --- | --- |
@@ -103,7 +103,7 @@ Data Loading
 
 ---
 
-## Data Cleaning & Preprocessing
+## 🧹 Data Cleaning & Preprocessing
 
 - Converted `TotalCharges` to numeric values.
 - Imputed invalid `TotalCharges` values with the median.
@@ -117,9 +117,9 @@ Data Loading
 
 ---
 
-## Feature Engineering
+## 🛠️ Feature Engineering
 
-### Compact Feature Engineering
+### ▪️ Compact Feature Engineering
 
 The compact feature set includes:
 
@@ -128,7 +128,7 @@ The compact feature set includes:
 - `monthly_charge_ratio`
 - Simplified service-related categorical values
 
-### Extended Feature Engineering
+### ▪️ Extended Feature Engineering
 
 The extended feature set adds domain-based signals related to:
 
@@ -146,13 +146,13 @@ The `high_monthly_charge` threshold is learned from training data only to avoid 
 
 ---
 
-## Feature Importance
+## 🌲 Feature Importance
 
 Random Forest was used to estimate the relative importance of transformed features. Billing, tenure, service usage, and contract-related variables were among the strongest signals in the analysis.
 
 ---
 
-## Feature Selection
+## ✂️ Feature Selection
 
 Three feature-selection strategies were evaluated:
 
@@ -166,7 +166,7 @@ The best feature-selected configuration was **Embedded Feature Selection + Gradi
 
 ---
 
-## Model Evaluation Metrics
+## 📏 Model Evaluation Metrics
 
 - **Accuracy:** Overall proportion of correct predictions.
 - **Precision:** Proportion of predicted churners who actually churn.
@@ -178,13 +178,13 @@ The best feature-selected configuration was **Embedded Feature Selection + Gradi
 
 ---
 
-## Cross-Validation
+## 🔁 Cross-Validation
 
 Hyperparameter tuning used **5-fold cross-validation** on the training data. The held-out test set was reserved for final evaluation.
 
 ---
 
-## Hyperparameter Tuning
+## 🎛️ Hyperparameter Tuning
 
 Tuning was performed **only on Gradient Boosting**, using the full extended feature set and `GridSearchCV` with `scoring="f1"`.
 
@@ -204,7 +204,7 @@ The search evaluated **108 combinations** across **540 fits**.
 
 ---
 
-## Results / Model Comparison
+## 🏆 Results / Model Comparison
 
 | Stage | Best Configuration | Accuracy | Precision | Recall | Churn F1 |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -214,7 +214,7 @@ The search evaluated **108 combinations** across **540 fits**.
 | Feature Selection | Embedded + Gradient Boosting | 80.6% | 67.0% | 52.7% | 0.590 |
 | Hyperparameter Tuning | Gradient Boosting | 80.8% | 67.8% | 52.9% | 0.595 |
 
-### Best Performing Approach
+### 🥇 Best Performing Approach
 
 **Gradient Boosting + Extended Feature Engineering**
 
@@ -231,7 +231,7 @@ The tuned model achieved `80.8%` accuracy and a `0.595` Churn F1-score. It did n
 
 ---
 
-## Key Findings
+## 🔍 Key Findings
 
 - Feature engineering provided the strongest performance improvement.
 - Extended feature engineering produced the highest test accuracy.
@@ -242,13 +242,13 @@ The tuned model achieved `80.8%` accuracy and a `0.595` Churn F1-score. It did n
 
 ---
 
-## Business Insights
+## 💡 Business Insights
 
 The feature-importance results suggest that churn predictions are strongly associated with billing levels, tenure, service adoption, contract type, and electronic-check payment behaviour. These signals can support targeted retention analysis, but they should be validated with business experiments before being used for customer decisions.
 
 ---
 
-## Technologies Used
+## 🧰 Technologies Used
 
 - Python
 - Pandas
@@ -262,7 +262,7 @@ The feature-importance results suggest that churn predictions are strongly assoc
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```text
 customer-churn-prediction/
@@ -275,7 +275,7 @@ customer-churn-prediction/
 
 ---
 
-## How to Run
+## ▶️ How to Run
 
 ```bash
 git clone https://github.com/bhavyasree-22/customer-churn-prediction.git
@@ -288,7 +288,7 @@ Open `customer_churn_prediction.ipynb` and run the cells from top to bottom. The
 
 ---
 
-## Future Enhancements
+## 🚀 Future Enhancements
 
 - Repeat evaluation across multiple stratified folds or an external holdout dataset.
 - Optimize the classification threshold for retention-focused business costs.
@@ -298,7 +298,7 @@ Open `customer_churn_prediction.ipynb` and run the cells from top to bottom. The
 
 ---
 
-## Conclusion
+## ✅ Conclusion
 
 This project demonstrates a complete machine-learning workflow for telecom churn prediction. The final comparison shows that feature engineering, rather than hyperparameter tuning or feature selection, provided the strongest improvement. The overall best approach was Gradient Boosting with the extended feature set, achieving `81.2%` test accuracy and a `0.604` Churn F1-score.
 
