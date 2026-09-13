@@ -1,262 +1,312 @@
-# Customer Churn Prediction
+<div align="center">
 
-An end-to-end machine learning project that predicts whether a telecommunications customer is likely to churn. The project focuses on turning raw customer, service, contract, payment, and billing data into a reliable modelling workflow that can be evaluated and explained.
+# Customer Churn Prediction Using Machine Learning
 
-The complete workflow is implemented in [customer_churn_prediction.ipynb](customer_churn_prediction.ipynb).
+### An end-to-end telecom churn classification workflow with feature engineering, model comparison, feature selection, and hyperparameter tuning.
 
-## Business Context
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Jupyter Notebook](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
+[![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Status](https://img.shields.io/badge/Status-Completed-2EA44F)](#results--model-comparison)
 
-Customer churn creates direct revenue loss and increases the cost of acquiring replacement customers. A churn model can help a telecom provider identify at-risk customers early and prioritize retention activity.
+</div>
 
-This project treats churn prediction as a binary classification problem. The positive class is `Churn = 1`, representing a customer who leaves the service.
+---
 
-The project emphasizes both overall classification quality and the ability to identify churners. Accuracy alone is not sufficient because churn is an imbalanced target, so Churn-class precision, recall, F1-score, ROC-AUC, and PR-AUC are also reported.
+## About
 
-## Objectives
+This project predicts whether a telecommunications customer is likely to churn. It compares six classification models, evaluates two feature-engineering strategies, investigates feature importance and feature selection, and tunes Gradient Boosting with Grid Search.
 
-- Clean and prepare the Telco Customer Churn dataset.
-- Establish a baseline using multiple classification algorithms.
+The complete implementation is available in [`customer_churn_prediction.ipynb`](customer_churn_prediction.ipynb).
+
+---
+
+## Project Objectives
+
+- Establish baseline performance using multiple classification models.
 - Create compact and extended domain-based features.
-- Compare model performance across feature sets.
-- Analyze transformed feature importance.
-- Compare Filter, Wrapper, and Embedded feature-selection strategies.
-- Tune the strongest Gradient Boosting configuration with 5-fold Grid Search.
-- Evaluate threshold-based and ranking-based metrics on an unseen test set.
-- Produce a consolidated comparison table for every modelling stage.
+- Compare models using consistent train-test splits and metrics.
+- Analyze important transformed features.
+- Evaluate Filter, Wrapper, and Embedded feature-selection methods.
+- Tune the strongest Gradient Boosting configuration.
+- Identify the best-performing modelling approach for churn prediction.
+
+---
+
+## Business Problem
+
+Customer churn can reduce recurring revenue and increase customer-acquisition costs. A churn prediction model can help identify customers who may need targeted retention attention.
+
+This is a binary classification problem. `Churn = 1` represents a customer who leaves the service.
+
+---
 
 ## Dataset
 
-The project uses the IBM Telco Customer Churn dataset stored at:
+The project uses the Telco Customer Churn dataset:
 
-```text
-data/WA_Fn-UseC_-Telco-Customer-Churn.csv
-```
+- **Records:** 7,043
+- **Original columns:** 21
+- **Target:** `Churn`
+- **Type:** Binary classification
+- **File:** `data/WA_Fn-UseC_-Telco-Customer-Churn.csv`
 
-The dataset contains 7,043 customer records and includes:
+`customerID` is removed before modelling. `TotalCharges` is converted from `object` to numeric, and `Churn` is encoded as `0` and `1`.
 
-- Demographic attributes such as gender, senior-citizen status, partner status, and dependents.
-- Account attributes such as tenure, contract type, billing method, and payment method.
-- Service attributes such as phone service, internet service, online security, backup, device protection, and streaming services.
-- Billing attributes such as monthly charges and total charges.
-- The target variable, `Churn`.
+### Dataset Features / Important Features
 
-`customerID` is removed because it is an identifier rather than a predictive feature. `TotalCharges` is converted from text to numeric values, and invalid values are imputed with the median.
+The dataset contains customer demographics, tenure, services, contract information, payment behaviour, monthly charges, and total charges.
 
-## Modelling Workflow
+The most influential features identified by the Random Forest analysis were:
+
+1. `charge_per_tenure_year`
+2. `MonthlyCharges`
+3. `TotalCharges`
+4. `service_tenure_interaction`
+5. `tenure`
+6. `is_month_to_month`
+7. `Contract_Month-to-month`
+8. `is_long_term_contract`
+9. `num_add_services`
+10. `PaymentMethod_Electronic check`
+
+---
+
+## Project Workflow
 
 ```text
 Data Loading
-	-> Data Cleaning
-	-> Baseline Model Comparison
-	-> Compact Feature Engineering
-	-> Extended Feature Engineering
-	-> Feature Importance
-	-> Feature Selection
-	-> Hyperparameter Tuning
-	-> Final Evaluation
-	-> Unified Comparison and Findings
+    -> Data Cleaning & Preprocessing
+    -> Baseline Model Comparison
+    -> Compact Feature Engineering
+    -> Extended Feature Engineering
+    -> Feature Set Comparison
+    -> Feature Importance
+    -> Feature Selection
+    -> Hyperparameter Tuning
+    -> Final Evaluation
+    -> Final Comparison & Findings
 ```
 
-### 1. Baseline Models
+---
 
-The cleaned dataset is evaluated without engineered features using:
+## Models Used
 
-- Logistic Regression
-- Random Forest
-- Gradient Boosting
-- XGBoost
-- LightGBM
-- Support Vector Machine
+| Model | Role |
+| --- | --- |
+| Logistic Regression | Baseline linear classifier and RFE estimator |
+| Random Forest Classifier | Baseline model and feature-importance analysis |
+| Gradient Boosting Classifier | Model selected for hyperparameter tuning |
+| XGBoost | Baseline tree-based classifier |
+| LightGBM | Baseline gradient-boosting classifier |
+| Support Vector Machine | Baseline margin-based classifier |
 
-Numerical features are standardized with `StandardScaler`. Categorical features are encoded with `OneHotEncoder(handle_unknown="ignore")`. Each model is evaluated inside a scikit-learn `Pipeline` and `ColumnTransformer`.
+---
 
-### 2. Compact Feature Engineering
+## Data Cleaning & Preprocessing
 
-The compact feature set introduces a small number of interpretable transformations:
+- Converted `TotalCharges` to numeric values.
+- Imputed invalid `TotalCharges` values with the median.
+- Encoded `Churn` as `0` and `1`.
+- Removed rows with missing target values.
+- Removed `customerID` because it is an identifier.
+- Standardized numerical features using `StandardScaler`.
+- One-hot encoded categorical features using `OneHotEncoder`.
+- Used scikit-learn `Pipeline` and `ColumnTransformer` objects.
+- Used an 80/20 stratified train-test split with `random_state=42`.
 
-- `tenure_group`: groups customers by lifecycle stage.
-- `num_add_services`: counts additional services used by a customer.
-- `monthly_charge_ratio`: relates monthly charges to customer tenure.
-- Service categories are simplified by combining `No phone service` and `No internet service` with the corresponding `No` category.
+---
 
-### 3. Extended Feature Engineering
+## Feature Engineering
 
-The extended feature set adds broader customer-behaviour and relationship signals:
+### Compact Feature Engineering
 
-- Total number of services.
-- New-customer indicator.
-- Family relationship indicator.
-- Electronic-payment indicator.
-- Month-to-month contract indicator.
-- Long-term contract indicator.
-- Monthly-charge threshold indicator.
-- Charge relative to tenure.
-- Service-tenure interaction.
-- Contract-tenure combination.
+The compact feature set includes:
 
-The `high_monthly_charge` threshold is learned from the training partition only and then applied to the test partition. This prevents the test set from influencing feature construction.
+- `tenure_group`
+- `num_add_services`
+- `monthly_charge_ratio`
+- Simplified service-related categorical values
 
-### 4. Feature Importance
+### Extended Feature Engineering
 
-A Random Forest model is used to inspect the importance of transformed features. The analysis highlights billing, tenure, service usage, and contract-related variables as important contributors to churn predictions.
+The extended feature set adds domain-based signals related to:
 
-### 5. Feature Selection
+- Tenure and customer lifecycle
+- Service usage
+- Customer relationships
+- Payment behaviour
+- Contract type
+- Monthly and total charges
+- Feature interactions
 
-Three strategies are compared:
+Important engineered features include `charge_per_tenure_year`, `service_tenure_interaction`, `is_month_to_month`, `is_long_term_contract`, and `num_add_services`.
 
-- **Filter:** Mutual Information with `SelectKBest`.
-- **Wrapper:** Recursive Feature Elimination with Logistic Regression.
-- **Embedded:** L1-regularized Logistic Regression with `SelectFromModel`.
+The `high_monthly_charge` threshold is learned from training data only to avoid test-set leakage.
 
-Each selector is placed inside a modelling pipeline so that selection is learned from training data rather than from the test set.
+---
 
-### 6. Hyperparameter Tuning
+## Feature Importance
 
-Gradient Boosting is tuned with `GridSearchCV` using 5-fold cross-validation. The search optimizes Churn-class F1-score across:
+Random Forest was used to estimate the relative importance of transformed features. Billing, tenure, service usage, and contract-related variables were among the strongest signals in the analysis.
 
-- Number of estimators.
-- Learning rate.
-- Maximum tree depth.
-- Minimum samples required to split a node.
-- Minimum samples required at a leaf.
+---
 
-## Evaluation Metrics
+## Feature Selection
 
-### Threshold-Based Metrics
+Three feature-selection strategies were evaluated:
+
+| Method | Implementation |
+| --- | --- |
+| **Filter** | Mutual Information with `SelectKBest` |
+| **Wrapper** | Recursive Feature Elimination (`RFE`) |
+| **Embedded** | L1 Logistic Regression with `SelectFromModel` |
+
+The best feature-selected configuration was **Embedded Feature Selection + Gradient Boosting**. However, the full extended feature set performed better overall, so it was retained for hyperparameter tuning.
+
+---
+
+## Model Evaluation Metrics
 
 - **Accuracy:** Overall proportion of correct predictions.
 - **Precision:** Proportion of predicted churners who actually churn.
-- **Recall:** Proportion of actual churners identified by the model.
-- **Churn F1-score:** Harmonic mean of churn precision and churn recall.
+- **Recall:** Proportion of actual churners identified.
+- **F1-score:** Balance between Churn precision and recall.
+- **ROC-AUC:** Ranking quality across classification thresholds.
+- **PR-AUC:** Precision-recall performance for the imbalanced churn target.
+- **Confusion Matrix:** Counts of correct and incorrect predictions by class.
 
-### Ranking-Based Metrics
+---
 
-- **ROC-AUC:** Measures how well the model ranks positive examples above negative examples across thresholds.
-- **PR-AUC:** Summarizes the precision-recall trade-off and is especially useful for an imbalanced churn target.
+## Cross-Validation
 
-For classifiers that expose probabilities, positive-class probabilities are used. For the linear Support Vector Machine, the decision-function margin is used as the ranking score.
+Hyperparameter tuning used **5-fold cross-validation** on the training data. The held-out test set was reserved for final evaluation.
 
-## Results
+---
 
-The best accuracy and Churn F1-score came from Gradient Boosting with the leakage-aware extended feature set. Its Churn F1-score is tied with the baseline Logistic Regression result, so the main improvement is accuracy and ranking quality rather than a unique F1-score improvement.
+## Hyperparameter Tuning
 
-### Best Extended Feature-Engineering Model
+Tuning was performed **only on Gradient Boosting**, using the full extended feature set and `GridSearchCV` with `scoring="f1"`.
 
-| Metric | Result |
-| --- | ---: |
-| Model | Gradient Boosting |
-| Accuracy | 0.812 |
-| Precision | 0.685 |
-| Recall | 0.540 |
-| Churn F1-score | 0.604 |
-| ROC-AUC | 0.846 |
-| PR-AUC | 0.659 |
+| Parameter | Values |
+| --- | --- |
+| `n_estimators` | `[100, 150, 200]` |
+| `learning_rate` | `[0.05, 0.1, 0.15]` |
+| `max_depth` | `[2, 3, 4]` |
+| `min_samples_split` | `[2, 5]` |
+| `min_samples_leaf` | `[1, 2]` |
 
-### Tuned Model
+The search evaluated **108 combinations** across **540 fits**.
 
-| Metric | Result |
-| --- | ---: |
-| Model | Tuned Gradient Boosting |
-| Accuracy | 0.808 |
-| Precision | 0.678 |
-| Recall | 0.529 |
-| Churn F1-score | 0.595 |
-| ROC-AUC | 0.846 |
-| PR-AUC | 0.666 |
+**Best parameters:** `learning_rate=0.05`, `max_depth=2`, `min_samples_leaf=1`, `min_samples_split=2`, and `n_estimators=200`.
 
-Tuning improved PR-AUC, which indicates better ranking quality for the imbalanced target, but it did not improve accuracy or Churn F1-score over the extended feature-engineered model.
+**Best cross-validation F1-score:** `0.586`
 
-### Stage-Level Summary
+---
 
-| Stage | Model | Accuracy | Churn F1 | ROC-AUC | PR-AUC |
+## Results / Model Comparison
+
+| Stage | Best Configuration | Accuracy | Precision | Recall | Churn F1 |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Baseline | Logistic Regression | 0.806 | 0.604 | 0.842 | 0.633 |
-| Extended features | Gradient Boosting | 0.812 | 0.604 | 0.846 | 0.659 |
-| Feature selection | Embedded + Gradient Boosting | 0.806 | 0.590 | 0.845 | 0.659 |
-| Tuned model | Gradient Boosting | 0.808 | 0.595 | 0.846 | 0.666 |
+| Baseline | Logistic Regression | 80.6% | 65.7% | 55.9% | 0.604 |
+| Compact Feature Engineering | Logistic Regression | 80.3% | 66.4% | 51.9% | 0.583 |
+| Extended Feature Engineering | Gradient Boosting | **81.2%** | **68.5%** | 54.0% | **0.604** |
+| Feature Selection | Embedded + Gradient Boosting | 80.6% | 67.0% | 52.7% | 0.590 |
+| Hyperparameter Tuning | Gradient Boosting | 80.8% | 67.8% | 52.9% | 0.595 |
+
+### Best Performing Approach
+
+**Gradient Boosting + Extended Feature Engineering**
+
+| Metric | Test Result |
+| --- | ---: |
+| Accuracy | **81.2%** |
+| Precision | **68.5%** |
+| Recall | **54.0%** |
+| Churn F1-score | **0.604** |
+| ROC-AUC | **0.846** |
+| PR-AUC | **0.659** |
+
+The tuned model achieved `80.8%` accuracy and a `0.595` Churn F1-score. It did not outperform the original extended-feature Gradient Boosting model.
+
+---
+
+## Key Findings
+
+- Feature engineering provided the strongest performance improvement.
+- Extended feature engineering produced the highest test accuracy.
+- The extended model's Churn F1-score of `0.604` is tied with baseline Logistic Regression.
+- Feature selection reduced performance compared with the full extended feature set.
+- Hyperparameter tuning improved neither final accuracy nor Churn F1-score.
+- The full extended feature set was retained as the final modelling configuration.
+
+---
+
+## Business Insights
+
+The feature-importance results suggest that churn predictions are strongly associated with billing levels, tenure, service adoption, contract type, and electronic-check payment behaviour. These signals can support targeted retention analysis, but they should be validated with business experiments before being used for customer decisions.
+
+---
+
+## Technologies Used
+
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Scikit-learn
+- XGBoost
+- LightGBM
+- Jupyter Notebook
+
+---
 
 ## Project Structure
 
 ```text
-Customer-Churn-Prediction/
-├── customer_churn_prediction.ipynb
+customer-churn-prediction/
 ├── data/
 │   └── WA_Fn-UseC_-Telco-Customer-Churn.csv
+├── customer_churn_prediction.ipynb
 ├── README.md
 └── requirements.txt
 ```
 
-## Installation
+---
 
-Python 3.10 or newer is recommended. Create an isolated environment from the project directory:
-
-### Windows PowerShell
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-### Windows Command Prompt
-
-```bat
-python -m venv .venv
-.venv\Scripts\activate.bat
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-### macOS or Linux
+## How to Run
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+git clone https://github.com/bhavyasree-22/customer-churn-prediction.git
+cd customer-churn-prediction
+pip install -r requirements.txt
+jupyter notebook
 ```
 
-## Running the Notebook
+Open `customer_churn_prediction.ipynb` and run the cells from top to bottom. The dataset path is relative to the project directory.
 
-Open the notebook in VS Code with the Jupyter extension or launch Jupyter directly:
+---
 
-```bash
-jupyter notebook customer_churn_prediction.ipynb
-```
+## Future Enhancements
 
-Run the cells from top to bottom. The notebook expects the dataset path to remain relative to the project directory. Running cells out of order can leave stale variables in the kernel, so restarting the kernel and running all cells is recommended after code changes.
+- Repeat evaluation across multiple stratified folds or an external holdout dataset.
+- Optimize the classification threshold for retention-focused business costs.
+- Add model calibration and explainability analysis.
+- Package the preprocessing and model pipeline for reproducible inference.
+- Add deployment and monitoring workflows.
 
-## Reproducibility
+---
 
-- Train-test split: 80/20.
-- Split random state: `42`.
-- Stratification: enabled for the churn target.
-- Hyperparameter tuning: 5-fold cross-validation.
-- Feature construction threshold: learned from training data only.
-- Model preprocessing: contained inside scikit-learn pipelines.
+## Conclusion
 
-The notebook records intermediate comparison tables, final metrics, feature importance results, and the unified modelling-stage table.
+This project demonstrates a complete machine-learning workflow for telecom churn prediction. The final comparison shows that feature engineering, rather than hyperparameter tuning or feature selection, provided the strongest improvement. The overall best approach was Gradient Boosting with the extended feature set, achieving `81.2%` test accuracy and a `0.604` Churn F1-score.
 
-## Resume-Ready Summary
+---
 
-Built an end-to-end telecom customer churn prediction workflow using six classification models, leakage-aware domain feature engineering, Filter/Wrapper/Embedded feature-selection experiments, and 5-fold Grid Search. Achieved 81.2% test accuracy with Gradient Boosting and extended features, and evaluated imbalanced-class performance using Churn F1-score, ROC-AUC, and PR-AUC.
+## Author
 
-### Resume Bullet Options
+**Bhavya Sree Gubba**  
+B.Tech CSE (AI & ML), VIT-AP University
 
-- Built a telecom customer churn classification pipeline using six machine-learning models, scikit-learn preprocessing pipelines, and domain-driven feature engineering.
-- Achieved 81.2% test accuracy and 0.604 Churn F1-score with Gradient Boosting and an extended feature set; evaluated ranking performance with ROC-AUC and PR-AUC.
-- Compared Filter, Wrapper, and Embedded feature selection and tuned Gradient Boosting with 5-fold Grid Search, improving PR-AUC to 0.666.
-- Prevented test-set leakage by learning a monthly-charge threshold from training data only and applying it consistently to validation data.
-
-## Limitations and Future Work
-
-- Results use one stratified train-test split. Repeated cross-validation or an external holdout dataset would provide a stronger estimate of generalization.
-- The churn class is imbalanced. Future work should evaluate threshold optimization, calibration, class weighting, and business-cost-sensitive metrics.
-- The project does not yet include deployment, monitoring, model versioning, or a production inference API.
-- A future version could add explainability with SHAP or permutation-based local explanations.
-- Retention experiments would be needed to measure whether model-driven interventions reduce actual churn.
-
-## License and Dataset Note
-
-This repository is intended for educational and portfolio use. The dataset is included locally in the `data/` directory; consult its original source and terms before redistributing it.
+**Profiles:** [GitHub](https://github.com/bhavyasree-22) · [LinkedIn](https://www.linkedin.com/in/bhavya-sree-22122006bs/)
